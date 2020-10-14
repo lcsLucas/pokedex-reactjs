@@ -1,4 +1,8 @@
+### Pokedéx ReactJS
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+![alt text](https://raw.githubusercontent.com/lcslucas/pokedex-reactjs/master/public/img/demonstracao.gif)
 
 ## Available Scripts
 
