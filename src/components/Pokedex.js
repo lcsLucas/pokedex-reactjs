@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 
 import DetailsPokemon from './DetailsPokemon'
@@ -11,15 +11,25 @@ const Pokedex = styled.div`
     width: 100%;
     max-width: 818px;
     height: 521px;
-    background: url(${ bgPokedex });
+    background: url(${bgPokedex});
     background-size: 100% 100%
 `
 
 export default () => {
+
+    const [pokemon, setPokemon] = useState(null)
+
+    const changePokemon = async (url_pokemon) => {
+        console.log(url_pokemon);
+        const req_pokemons = await (await fetch(url_pokemon)).json()
+
+        setPokemon(req_pokemons)
+    }
+
     return (
         <Pokedex className="pokedex">
-            <DetailsPokemon />
-            <ListPokemons />
+            <DetailsPokemon pokemon={pokemon} />
+            <ListPokemons changePokemon={changePokemon} />
         </Pokedex>
     )
 }

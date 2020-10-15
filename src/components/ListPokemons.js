@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 
 import styled from 'styled-components'
 
+import Load from './Load'
+
 const ListaPokemons = styled.div`
 position:absolute;
 left: 883px;
@@ -21,19 +23,28 @@ border-radius: 15px;
     flex-direction:column;
     flex-wrap:wrap;
     overflow: hidden;
+    padding: .4rem .3rem;
+
+    .nav-item {
+        width: 50%;
+        flex: 1;
+    }
 
     button {
         width: 100%;
         background: transparent;
         border: none;
-        padding: .25rem 1rem;
+        padding: .18rem 1rem;
         text-align:left;
         color: #FFF;
         font-size: .85rem;
-        font-weight: bold;
         text-transform: capitalize;
         outline: none;
         transition: background-color .1s;
+
+        small {
+            font-size: 75%
+        }
 
         &:hover {
             background: #FFF;
@@ -84,9 +95,13 @@ border-radius: 15px;
         font-weight: 700;
         color: #222;
 
+        background: #E6E6E6;
+        border-radius: 3px;
+        border: 2px solid black;
+        box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.3);
+
         &:hover {
-            border-color: transparent !important;
-            background-color: #DDD !important; 
+            background-color: #FFF !important; 
         }
 
     }
@@ -94,27 +109,7 @@ border-radius: 15px;
 }
 `
 
-function PokemonItem({ id, name }) {
-    return (
-        <li className="nav-item">
-            <button>
-                {`${id}. ${name}`}
-            </button>
-        </li>
-    )
-}
-
-function Load() {
-    return (
-        <div className="load">
-            <div className="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-        </div>
-    )
-}
-
-export default () => {
-
-    const [offset, setOffset] = useState(0)
+export default (props) => {
 
     const [urls, setUrls] = useState({
         cur: 'https://pokeapi.co/api/v2/pokemon/?limit=20&offset=0',
@@ -125,17 +120,12 @@ export default () => {
     const [load, setLoad] = useState(true)
     const [err, setErr] = useState({ status: false, msg: 'Erro, ao buscar os pokemons.' })
 
-    const loadPokemons = async () => {
-        setLoad(false);
+    const loadPokemons = async () => {        
 
         try {
             const req_pokemons = await (await fetch(urls.cur)).json()
 
             if (req_pokemons) {
-
-                let query = urls.cur.split('offset=')
-                query = query[1] ? query[1] : ''
-                setOffset(+query.split('&')[0])
 
                 setUrls({
                     cur: urls.cur,
@@ -144,6 +134,8 @@ export default () => {
                 })
                 setListPokemons(req_pokemons.results)
             }
+
+            setLoad(false);
 
         } catch (e) {
             setErr({
@@ -197,6 +189,22 @@ export default () => {
         )
     }
 
+    function PokemonItem({ name, url }) {
+
+        let query = url.slice(0, -1)
+        query = query.split("/")
+        
+        let id = query[query.length - 1];
+
+        return (
+            <li className="nav-item">
+                <button onClick={() => props.changePokemon(url)}>
+                    <small>{`${id}`}</small>{`. ${name}`}
+                </button>
+            </li>
+        )
+    }
+
     return (
 
         <ListaPokemons className="list-pokemons">
@@ -211,7 +219,7 @@ export default () => {
                 <ul className="nav">
                     {
                         listPokemons.map((item, index) => (
-                            <PokemonItem key={index} id={index + offset + 1} url={item.url} name={item.name} />
+                            <PokemonItem key={index} url={item.url} name={item.name} />
                         ))
                     }
                 </ul>
